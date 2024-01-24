@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "embed",
+  "module": "index.tsx",
+  "type": "module",
+  "scripts": {
+    "start": "bun run ./index.tsx",
+    "dev": "bun --hot run ./index.tsx"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.314.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
