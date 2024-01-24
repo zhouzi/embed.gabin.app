@@ -405,8 +405,11 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     <body>
       <iframe title="${parameters.title}" src="${parameters.url}"></iframe>
       ${parameters.banner}
+      <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
     </body>
-  </html>
-      `
+  </html>`
   );
 }
