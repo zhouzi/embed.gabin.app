@@ -4,7 +4,8 @@
   "module": "index.tsx",
   "type": "module",
   "scripts": {
-    "start": "bun run ./index.tsx",
+    "build": "bun build ./index.tsx --outdir ./dist --target node",
+    "start": "node ./dist/index.js",
     "dev": "bun --hot run ./index.tsx"
   },
   "devDependencies": {
