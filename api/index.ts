@@ -42,7 +42,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   const parameters = req.url ? getParameters(req.url) : undefined;
 
   if (parameters == null) {
-    return res.redirect(302, "https://gabin.app");
+    return res.redirect(307, "https://gabin.app");
   }
 
   return res.send(
