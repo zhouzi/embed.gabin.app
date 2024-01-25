@@ -1,8 +1,51 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import * as cheerio from "cheerio";
 
-function getParameters(pathname: string) {
+async function getMetadata(url: string) {
+  const res = await fetch(url);
+
+  if (res.ok) {
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    const title =
+      $('meta[property="og:title"]').attr("content") ||
+      $('meta[name="og:title"]').attr("content") ||
+      $('meta[property="twitter:title"]').attr("content") ||
+      $('meta[name="twitter:title"]').attr("content") ||
+      $('meta[property="title"]').attr("content") ||
+      $('meta[name="title"]').attr("content") ||
+      $("title").text() ||
+      $("h1").text();
+    const description =
+      $('meta[property="og:description"]').attr("content") ||
+      $('meta[name="og:description"]').attr("content") ||
+      $('meta[property="twitter:description"]').attr("content") ||
+      $('meta[name="twitter:description"]').attr("content") ||
+      $('meta[property="description"]').attr("content") ||
+      $('meta[name="description"]').attr("content");
+    const image =
+      $('meta[property="og:image"]').attr("content") ||
+      $('meta[name="og:image"]').attr("content") ||
+      $('meta[property="twitter:image"]').attr("content") ||
+      $('meta[name="twitter:image"]').attr("content") ||
+      $('meta[property="thumbnail"]').attr("content") ||
+      $('meta[name="thumbnail"]').attr("content");
+
+    return { title, description, image };
+  }
+
+  return undefined;
+}
+
+async function getParameters(pathname: string) {
   if (pathname.startsWith("/www.superindep.fr/")) {
     const url = new URL(`https://${pathname.slice(1)}`);
+    const metadata = await getMetadata(url.toString());
+
+    if (metadata == null) {
+      return undefined;
+    }
 
     const closeUrl = new URL(url);
     closeUrl.searchParams.set("utm_source", "gabin.app");
@@ -10,7 +53,11 @@ function getParameters(pathname: string) {
     closeUrl.searchParams.set("utm_campaign", "partnership");
 
     return {
-      title: "SuperIndep x Gabin",
+      title: metadata.title ?? "SuperIndep x Gabin",
+      description:
+        metadata.description ??
+        "Profite de 10€ de réduction sur les abonnements SuperIndep pendant 3 mois grâce au partenariat avec Gabin.",
+      image: metadata.image,
       url: url.toString(),
       banner: `<div class="SuperIndep">
       <div class="SuperIndepLogo">
@@ -38,8 +85,8 @@ function getParameters(pathname: string) {
   return undefined;
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  const parameters = req.url ? getParameters(req.url) : undefined;
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const parameters = req.url ? await getParameters(req.url) : undefined;
 
   if (parameters == null) {
     return res.redirect(307, "https://gabin.app");
@@ -52,6 +99,31 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>${parameters.title}</title>
+      <meta name="title" content="${parameters.title}" />
+      <meta name="description" content="${parameters.description}" />
+
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="${parameters.url}" />
+      <meta property="og:title" content="${parameters.title}" />
+      <meta property="og:description" content="${parameters.description}" />
+      ${
+        parameters.image
+          ? `<meta property="og:image" content="${parameters.image}" />`
+          : ""
+      }
+
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content="${parameters.url}" />
+      <meta property="twitter:title" content="${parameters.title}" />
+      <meta property="twitter:description" content="${
+        parameters.description
+      }" />
+      ${
+        parameters.image
+          ? `<meta property="twitter:image" content="${parameters.image}" />`
+          : ""
+      }
+
       <style>
         /*! modern-normalize v2.0.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
   
