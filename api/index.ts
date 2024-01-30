@@ -41,16 +41,15 @@ async function getMetadata(url: string) {
 async function getParameters(pathname: string) {
   if (pathname.startsWith("/www.superindep.fr/")) {
     const url = new URL(`https://${pathname.slice(1)}`);
+    url.searchParams.set("utm_source", "gabin.app");
+    url.searchParams.set("utm_medium", "embed.gabin.app");
+    url.searchParams.set("utm_campaign", "partnership");
+
     const metadata = await getMetadata(url.toString());
 
     if (metadata == null) {
       return undefined;
     }
-
-    const closeUrl = new URL(url);
-    closeUrl.searchParams.set("utm_source", "gabin.app");
-    closeUrl.searchParams.set("utm_medium", "embed.gabin.app");
-    closeUrl.searchParams.set("utm_campaign", "partnership");
 
     return {
       title: metadata.title ?? "SuperIndep x Gabin",
@@ -74,7 +73,7 @@ async function getParameters(pathname: string) {
         <a class="SuperIndepButton" href="https://go.gabin.app/superindep">
           J'en profite
         </a>
-        <a class="SuperIndepIconButton" href="${closeUrl.toString()}">
+        <a class="SuperIndepIconButton" href="${url.toString()}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x "><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
         </a>
       </div>
