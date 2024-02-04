@@ -58,7 +58,11 @@ async function getParameters(pathname: string) {
         "Profite de 10€ de réduction sur les abonnements SuperIndep pendant 3 mois grâce au partenariat avec Gabin.",
       image: metadata.image,
       url: url.toString(),
-      banner: `<div class="SuperIndep">
+      banner: pathname.startsWith(
+        "/www.superindep.fr/partenaire/gabin-aureche.html"
+      )
+        ? ``
+        : `<div class="SuperIndep">
       <div class="SuperIndepLogo">
         <img src="/superindep.png" alt="Logo SuperIndep" height="22px" />
         <span style="font-size: 0.8rem;">x</span>
